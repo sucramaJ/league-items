@@ -7,9 +7,9 @@ def print_item(item_dict):
     '''
     Function for printing an item in the terminal.
     '''
-    print(f"\n{item_dict['name']}:")
-    for key, val in item_dict.items():
-        print(f"{key}: {val}\n")
+    features = ['name', 'id', 'gold', 'buildsInto', 'stats', 'plaintext', 'sanitizedDescription','image']
+    for feature in features:
+        print(f"{feature}: {item_dict[feature]}\n")
 
 def detag_text(text):
     '''
@@ -18,29 +18,31 @@ def detag_text(text):
     clean_re = '<.*?>'
     text = text.replace('<br>',', ')
     clean_text = re.sub(clean_re, '', text)
-    print(f"{clean_text} clean text")
     return clean_text
 
-def strip_item(item_dict):
+def strip_item(item):
     '''
     Strips item of any features we do not care about
     '''
-    strip_features = ['name','stats', 'plaintext', 'buildsInto', 'sanitizedDescription','gold','id','image']
+    item_dict = item.to_dict()
+    strip_features = ['name', 'id', 'gold', 'buildsInto', 'stats', 'plaintext', 'sanitizedDescription','image']
     stripped_item = {key: value for key, value in item_dict.items() if key in strip_features}
     stripped_item['sanitizedDescription'] = detag_text(stripped_item['sanitizedDescription'])
     return stripped_item
+
 
 def get_item_data():
     '''
     Function to download item data and store it in a JSON file.
     '''
     items_dict = {}
+    #returns a list of items in League of Legends
     items = cass.get_items(region="NA")
     item = items[110]
-    item = item.to_dict()
     print('-------------')
     cleaned_item = strip_item(item)
     print_item(cleaned_item)
+    print('-----------------')
 
 
 if __name__ == "__main__":
